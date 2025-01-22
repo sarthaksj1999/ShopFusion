@@ -1,0 +1,134 @@
+<% layout('layouts/boilerplate') %>
+    <%- include('../partials/navbar') %>
+
+        <div class="row mx-auto mt-3 px-5">
+            <h1 style="font-family: Arial, Helvetica, sans-serif;">My cart</h1>
+            <div class="col-md-8 d-inline-block">
+                <% for(let item of user.cart) { %>
+                    <div class="card mb-3" style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="<%= item.img %>" class="img-fluid rounded-start"
+                                    style="height: 100px; width: 80%;" alt="...">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title d-flex justify-content-between">
+                                        <%= item.name %>
+                                            <form action="/user/<%= item._id %>/delete?_method=DELETE" method="POST"
+                                                class="d-inline-block">
+                                                <button type="submit" style="background: none; border: none;">
+                                                    <i class="fa-solid fa-trash-can fa-xs" style="color: #db0000;"></i>
+                                                </button>
+                                            </form>
+                                    </h5>
+                                    <p class="card-text">
+                                        <%= item.desc %>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+            </div>
+            <div class="col-md-4">
+                <% if(user.cart.length) { %>
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-primary" aria-current="true"><strong>Order
+                                details:</strong></li>
+                        <% for(let item of user.cart) { %>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>
+                                    <%= item.name %>:
+                                </span>
+                                <span>&#8377; <%= item.price %></span>
+                            </li>
+                            <% } %>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Total amount :</strong>
+                                    <strong>&#8377; <%= TotalAmount %></strong>
+                                </li>
+                                <form id="payment-form flex">
+                                    <input type="hidden" id="amount" name="amount" value="<%= TotalAmount %>" />
+                                    <button class="btn btn-success mt-3 pay-button" type="button" onclick="payNow()"
+                                        style="width: 100%;">Pay Now</button>
+
+                                </form>
+                    </ul>
+                    <% } %>
+            </div>
+            <div class="d-flex justify-content-center align-items-center">
+                <% if(!user.cart.length){ %>
+                    <img src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png"
+                        style="max-width: 50vw; max-height: 70vh;" alt="Empty Cart">
+                    <% } %>
+            </div>
+        </div>
+
+
+        <!------------------------------- Razorpay --------------------------------->
+
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+        <script>
+            function payNow() {
+                // Get the total amount from the hidden input field
+                const amount = document.getElementById('amount').value;
+
+                // Make a request to your server to create the Razorpay order
+                fetch('/create-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amount: amount }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        const options = {
+                            key: 'rzp_test_Pq59b25Z4Ggdxm', // Your Razorpay Key ID (replace with actual value)
+                            amount: data.amount, // Amount in paise
+                            currency: 'INR', // Currency code
+                            name: 'Shopping App', // Your store name
+                            description: 'Order Payment', // Payment description
+                            // image: 'your_logo_url_here', // Optional: Your logo URL
+                            order_id: data.order_id, // The order_id returned from your server
+                            handler: function (response) {
+                                // This will handle the response after payment is made
+                                alert('Payment Successful: ' + response.razorpay_payment_id);
+
+                                // Optionally, send this payment_id to the server to confirm payment
+                                fetch('/verify-payment', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        payment_id: response.razorpay_payment_id,
+                                        order_id: data.order_id,
+                                    }),
+                                });
+                            },
+                            prefill: {
+                                name: 'Sarthak', // Prefill customer name
+                                email: 'sarthaksj1999@gmail.com', // Prefill customer email
+                                contact: '7015448789', // Prefill customer phone
+                            },
+                            theme: {
+                                color: '#33b5e5', // Customize the Razorpay checkout button color
+                            },
+                        };
+
+                        // Open the Razorpay checkout modal
+                        const razorpay = new Razorpay(options);
+                        razorpay.open();
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            }
+        </script>
+
+        </body>
+
+        </html>

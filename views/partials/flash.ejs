@@ -1,0 +1,19 @@
+<% if(success && success.length){ %>
+    <div class="alert alert-success alert-dismissible fade show mx-1" role="alert"
+        style="background: linear-gradient(#cff6a2, #d2f7c7); border-left: 4px solid #28a745;">
+        <strong>
+            <%= success %>
+        </strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <% } %>
+
+        <% if(error && error.length){ %>
+            <div class="alert alert-danger alert-dismissible fade show mx-1" role="alert"
+                style="background: linear-gradient(#f8d7da, #f1b0b7); border-left: 4px solid #dc3545;">
+                <strong>
+                    <%= error %>
+                </strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <% } %>
