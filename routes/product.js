@@ -7,6 +7,10 @@ const { showAllProducts, productForm, createProduct, showProduct, editProductFor
 
 //To show all the products
 
+router.get('/', (req, res) => {
+    res.redirect('/products');
+})
+
 router.get('/products', showAllProducts);
 
 //To show form for new product
