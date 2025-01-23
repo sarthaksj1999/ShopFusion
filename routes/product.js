@@ -1,5 +1,4 @@
 const express = require('express');
-const Product = require('../models/Product');
 const router = express.Router(); //mini instance of app
 const { validateProduct, isLoggedIn, isSeller, isProductAuthor } = require('../middleware');
 const { showAllProducts, productForm, createProduct, showProduct, editProductForm, updateProduct, deleteProduct } = require('../controllers/product');
@@ -7,6 +6,7 @@ const { showAllProducts, productForm, createProduct, showProduct, editProductFor
 //All mongoose methods return a promise. So to avoid promise chaining we use async await functions
 
 //To show all the products
+
 router.get('/products', showAllProducts);
 
 //To show form for new product

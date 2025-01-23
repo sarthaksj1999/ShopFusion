@@ -2,6 +2,10 @@ const Product = require('../models/Product');
 
 //All mongoose methods return a promise. So to avoid promise chaining we use async await functions
 
+app.get('/', (req, res) => {
+    res.redirect('/products');
+})
+
 //To show all the products
 const showAllProducts = async (req, res) => {
     try {
